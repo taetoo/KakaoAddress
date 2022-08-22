@@ -1,53 +1,48 @@
 package com.example.kakaoaddress;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
+import java.util.HashMap;
+
 
 public class KakaoApiTest {
-    private static String URL="http://dapi.kakao.com/v2/local/search/address.json?query=";
-    private static String USER_INFO="a0c64f0b4454a4ed8c7af29385a093de";
 
     public static void main(String[] args) {
 
-        java.net.URL obj;
+        String APIKey = "KakaoAK a0c64f0b4454a4ed8c7af29385a093de";
 
-        try{
-            //인코딩한 String을 넘겨야 원하는 데이터를 받을 수 있다.
-            String address = URLEncoder.encode("도곡로 218", "UTF-8");
+        HashMap<String, Object> map = new HashMap<>(); //결과를 담을 map
 
-            obj = new URL(URL+address);
+        try {
+            String apiURL = "https://dapi.kakao.com/v2/local/search/address.json?query="
+                    + URLEncoder.encode("도곡로 218", "UTF-8");
 
-            HttpURLConnection con = (HttpURLConnection)obj.openConnection();
+            HttpResponse<JsonNode> response = Unirest.get(apiURL)
+                    .header("Authorization", APIKey)
+                    .asJson();
 
-            //get으로 받아오면 된다. 자세한 사항은 카카오개발자센터에 나와있다.
-            con.setRequestMethod("GET");
-            con.setRequestProperty("Authorization", " KakaoAK " + USER_INFO);
-            con.setRequestProperty("content-type", "application/json");
-            con.setDoOutput(true);
-            con.setUseCaches(false);
-            con.setDefaultUseCaches(false);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 
-            Charset charset = Charset.forName("UTF-8");
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), charset));
+            KakaoApiTestVo bodyJson = objectMapper.readValue(response.getBody().toString(), KakaoApiTestVo.class);
 
-            String inputLine;
-            StringBuffer response = new StringBuffer();
+            HashMap<String, Object> address = bodyJson.getDocuments().get(0).getAddress();
 
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
+            System.out.println("지번주소: " + address.get("address_name"));
+            System.out.println("법정코드: " + address.get("b_code"));
+            System.out.println("행정코드: " + address.get("h_code"));
 
-            //response 객체를 출력해보자
-            System.out.println(response.toString());
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
 
     }
 }
