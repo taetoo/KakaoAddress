@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    //초기 의존성 셋팅 spring jpa data, h2 database, mySql, lombok, spring web
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
@@ -26,6 +27,13 @@ dependencies {
     runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //로깅에 필요한 의존성
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.17.0'
+
+
+    //json 파일 및 restapi 호출시 이용하는 라이브러리 의존성 주입
     implementation 'org.json:json:20190722'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation group: 'com.mashape.unirest', name: 'unirest-java', version: '1.3.1'
