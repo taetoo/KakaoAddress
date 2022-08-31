@@ -15,6 +15,7 @@ public class KakaoApiTestVo {
 class Documents {
     private HashMap<String, Object> address;
     private String address_type;
+    private String building_name;
     private Double x;
     private Double y;
     private String address_name;
